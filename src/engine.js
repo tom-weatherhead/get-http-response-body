@@ -14,6 +14,8 @@
 // Promise.race(iterable) returns a promise that resolves or rejects as soon as one of the promises in the iterable resolves or rejects, with the value or reason from that promise. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
 
 function getBody (url, options = {}) {
+	const responseEncoding = options.responseEncoding || 'utf8';
+
 	return new Promise((resolve, reject) => {
 		let requestEngine;
 
@@ -55,34 +57,21 @@ function getBody (url, options = {}) {
 				error.httpStatusMessage = statusMessage;
 				// error.httpResponse = response;
 				console.error(error.message);
-				// consume response data to free up memory
+
+				// Consume response data to free up memory
 				response.resume();
-				//return;
+
 				reject(error);
 			}
 
-			response.setEncoding('utf8');
+			response.setEncoding(responseEncoding);
 
 			let rawData = '';
 
 			response.on('data', chunk => { rawData += chunk; });
 
 			response.on('end', () => {
-
-				if (options.parseJSON) {
-					try {
-						const parsedData = JSON.parse(rawData);
-
-						//console.log('Parsed JSON data:', parsedData);
-						resolve(parsedData);
-					} catch (error2) {
-						console.error(`JSON.parse() error: ${error2.message}`);
-						reject(error2);
-					}
-				} else {
-					//console.log('options.parseJSON is false.');
-					resolve(rawData);
-				}
+				resolve(rawData);
 			});
 		});
 
@@ -111,10 +100,6 @@ function getBodyAsJSON (url, options = {}) {
 
 				return Promise.reject(error);
 			}
-		}, error => {
-			console.error('getBodyAsJSON() : getBody().then() : Error is', error);
-
-			return Promise.reject(error);
 		});
 }
 
@@ -125,12 +110,10 @@ function getBodyAsJSON (url, options = {}) {
 function matchRegex (url, regex, options = {}) {
 	return getBody(url, options)
 		.then(body => {
-			//console.log('Success! Body is', body);
-
 			const indexOfCaptureGroup = 1;
-			let match;
+			let match = regex.exec(body);
 
-			if ((match = regex.exec(body)) !== null && match.length > indexOfCaptureGroup) {
+			if (match !== null && match.length > indexOfCaptureGroup) {
 				return Promise.resolve(match[indexOfCaptureGroup]);
 			} else {
 				let errorMessage = 'matchRegex failed.';
@@ -139,71 +122,8 @@ function matchRegex (url, regex, options = {}) {
 
 				return Promise.reject(new Error(errorMessage));
 			}
-		}, error => {
-			console.error('matchRegex() : Error is', error);
-
-			return Promise.reject(error);
 		});
 }
-
-// **** Test getBody ****
-
-//let url = 'http://nodejs.org/dist/index.json';
-//let url = 'https://www.google.ca';
-//let url = 'https://github.com';
-//let url = 'http://localhost:5000';
-//let url = 'https://httpbin.org/status/200';
-//let url = 'https://httpbin.org/status/404';
-//let url = 'https://httpbin.org/status/500';
-//let url = 'https://httpbin.org/uuid';
-
-// let options = {};
-
-// options.parseJSON = true;
-
-// getBody(url, options)
-//	.then(body => {
-//		console.log('Success! Body is', body);
-//		console.log('body.uuid is', body.uuid);
-//		console.log('body.uuid is', body['uuid']);
-//	}, error => {
-//		console.error('Error is', error);
-//		console.error('HTTP status code is', error.httpStatusCode);
-//		console.error('Foo 1:', error.httpResponse.statusCode)
-//		console.error('Foo 2:', error.httpResponse.statusMessage)
-//	});
-
-// **** Test getBodyAsJSON ****
-
-//let url = 'http://nodejs.org/dist/index.json';
-//let url = 'https://httpbin.org/uuid';
-
-//getBodyAsJSON(url)
-//	.then(parsedData => {
-//		console.log('Test of getBodyAsJSON() : Success! parsedData is', parsedData);
-
-//		if (parsedData.uuid) {
-//			console.log('Type of parsedData.uuid is', typeof parsedData.uuid);
-//			console.log('parsedData.uuid is', parsedData.uuid);
-//		}
-//	}, error => {
-//		console.error('Test of getBodyAsJSON() : Error is', error);
-//		console.error('HTTP status code is', error.httpStatusCode);
-//	});
-
-// **** Test matchRegex ****
-
-//let url = 'https://nodejs.org/en/';
-//let regex = /Download v{0,1}(\S+)\s+Current/;
-//let regex = /Downlooad v{0,1}(\S+)\s+Current/;
-//let options = {};
-
-//matchRegex(url, regex, options)
-//	.then(capturedText => {
-//		console.log('matchRegex: Success! capturedText is', capturedText);
-//	}, error => {
-//		console.error('matchRegex: Error is', error);
-//	});
 
 module.exports = {
 	getBody: getBody,
