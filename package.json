@@ -1,0 +1,38 @@
+{
+  "name": "get-http-response-body",
+  "version": "0.0.0",
+  "description": "Obtain the body of a response to an HTTP GET request.",
+  "main": "src/engine.js",
+  "homepage": "https://github.com/tom-weatherhead/get-http-response-body#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tom-weatherhead/get-http-response-body.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tom-weatherhead/get-http-response-body/issues"
+  },
+  "scripts": {
+    "lint": "grunt eslint",
+    "mocha": "grunt mochaTest",
+    "nsp": "grunt nsp",
+    "start": "node src/engine.js",
+    "test": "grunt"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "grunt": "^1.0.1",
+    "grunt-eslint": "^20.1.0",
+    "grunt-mocha-test": "^0.13.3",
+    "grunt-nsp": "^2.3.1",
+    "mocha": "^4.1.0"
+  },
+  "keywords": [
+    "HTTP",
+    "Promise"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Tom Weatherhead",
+    "url": "https://github.com/tom-weatherhead"
+  }
+}
