@@ -13,6 +13,11 @@
 // Promise.all(iterable) returns a single Promise that resolves when all of the promises in the iterable argument have resolved or when the iterable argument contains no promises. It rejects with the reason of the first promise that rejects. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 // Promise.race(iterable) returns a promise that resolves or rejects as soon as one of the promises in the iterable resolves or rejects, with the value or reason from that promise. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race
 
+
+// Would there be any advantage to using Observables rather than Promises?
+// See e.g. https://stackoverflow.com/questions/37364973/angular-promise-vs-observable
+// See e.g. https://blog.thoughtram.io/angular/2016/01/06/taking-advantage-of-observables-in-angular2.html
+
 function getBody (url, options = {}) {
 	const responseEncoding = options.responseEncoding || 'utf8';
 
