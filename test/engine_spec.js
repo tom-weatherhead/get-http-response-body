@@ -138,7 +138,7 @@ describe('App', function () {
 			regex: /Download v{0,1}(\S+)\s+Current/,
 			options: {},
 			expectedHttpStatusCode: 200,
-			expectedCapturedText: '9.4.0',
+			expectedCapturedText: '9.5.0',
 			fnAdditionalTests: null
 		},
 		testCaseStatus404,
