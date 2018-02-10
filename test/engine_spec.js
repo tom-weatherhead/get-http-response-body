@@ -2,7 +2,7 @@
 
 'use strict';
 
-const engine = require('../src/engine.js');
+const engine = require('..');
 
 const chai = require('chai');
 const expect = chai.expect;
