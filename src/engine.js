@@ -4,6 +4,8 @@
 
 'use strict';
 
+let http = require('http');
+
 // Promise.then() returns a Promise in the pending status. See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
 // The catch() method returns a Promise and deals with rejected cases only. It behaves the same as calling Promise.prototype.then(undefined, onRejected). See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
 
@@ -130,8 +132,179 @@ function matchRegex (url, regex, options = {}) {
 		});
 }
 
+/*
+ * From https://nodejs.org/api/http.html (Node.js version 9.6.1) :
+ 
+options can be an object, a string, or a URL object. If options is a string, it is automatically parsed with url.parse(). If it is a URL object, it will be automatically converted to an ordinary options object.
+
+The optional callback parameter will be added as a one-time listener for the 'response' event.
+
+http.request() returns an instance of the http.ClientRequest class. The ClientRequest instance is a writable stream. If one needs to upload a file with a POST request, then write to the ClientRequest object.
+
+Example:
+
+const postData = querystring.stringify({
+  'msg': 'Hello World!'
+});
+
+const options = {
+  hostname: 'www.google.com',
+  port: 80,
+  path: '/upload',
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Length': Buffer.byteLength(postData)
+  }
+};
+
+const req = http.request(options, (res) => {
+  console.log(`STATUS: ${res.statusCode}`);
+  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+  res.setEncoding('utf8');
+  res.on('data', (chunk) => {
+    console.log(`BODY: ${chunk}`);
+  });
+  res.on('end', () => {
+    console.log('No more data in response.');
+  });
+});
+
+req.on('error', (e) => {
+  console.error(`problem with request: ${e.message}`);
+});
+
+// write data to request body
+req.write(postData);
+req.end();
+
+Note that in the example req.end() was called. With http.request() one must always call req.end() to signify the end of the request - even if there is no data being written to the request body.
+
+If any error is encountered during the request (be that with DNS resolution, TCP level errors, or actual HTTP parse errors) an 'error' event is emitted on the returned request object. As with all 'error' events, if no listeners are registered the error will be thrown.
+
+There are a few special headers that should be noted.
+
+    Sending a 'Connection: keep-alive' will notify Node.js that the connection to the server should be persisted until the next request.
+
+    Sending a 'Content-Length' header will disable the default chunked encoding.
+
+    Sending an 'Expect' header will immediately send the request headers. Usually, when sending 'Expect: 100-continue', both a timeout and a listener for the continue event should be set. See RFC2616 Section 8.2.3 for more information.
+
+    Sending an Authorization header will override using the auth option to compute basic authentication.
+
+ */
+
+function request() {
+}
+
+function post(hostname, port, path, postData) {
+	// const postData = querystring.stringify({
+	  // 'msg': 'Hello World!'
+	// });
+	let postDataString = JSON.stringify(postData);
+	
+	const options = {
+	  hostname: hostname, //'www.google.com',
+	  port: port, //80,
+	  path: path, //'/upload',
+	  method: 'POST',
+	  headers: {
+		//'Content-Type': 'application/x-www-form-urlencoded',
+		'Content-Type': 'application/json',
+		'Content-Length': Buffer.byteLength(postDataString)
+	  }
+	};
+
+	const req = http.request(options, (res) => {
+	  console.log(`STATUS: ${res.statusCode} ${res.statusMessage}`);
+	  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+	  res.setEncoding('utf8');
+	  res.on('data', (chunk) => {
+		console.log(`BODY: ${chunk}`);
+	  });
+	  res.on('end', () => {
+		console.log('No more data in response.');
+	  });
+	});
+
+	req.on('error', (e) => {
+	  console.error(`problem with request: ${e.message}`);
+	});
+
+	// write data to request body
+	req.write(postDataString);
+	req.end();
+}
+
+function put(hostname, port, path, putData) {
+	let putDataString = JSON.stringify(putData);
+	
+	const options = {
+	  hostname: hostname, //'www.google.com',
+	  port: port, //80,
+	  path: path, //'/upload',
+	  method: 'PUT',
+	  headers: {
+		//'Content-Type': 'application/x-www-form-urlencoded',
+		'Content-Type': 'application/json',
+		'Content-Length': Buffer.byteLength(putDataString)
+	  }
+	};
+
+	const req = http.request(options, (res) => {
+	  console.log(`STATUS: ${res.statusCode} ${res.statusMessage}`);
+	  console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+	  res.setEncoding('utf8');
+	  res.on('data', (chunk) => {
+		console.log(`BODY: ${chunk}`);
+	  });
+	  res.on('end', () => {
+		console.log('No more data in response.');
+	  });
+	});
+
+	req.on('error', (e) => {
+	  console.error(`problem with request: ${e.message}`);
+	});
+
+	// write data to request body
+	req.write(putDataString);
+	req.end();
+}
+
+function delet(hostname, port, path) {
+	// let putDataString = JSON.stringify(putData);
+	
+	const options = {
+	  hostname: hostname, //'www.google.com',
+	  port: port, //80,
+	  path: path, //'/upload',
+	  method: 'DELETE'
+	};
+
+	const req = http.request(options, (res) => {
+	  console.log(`STATUS: ${res.statusCode} ${res.statusMessage}`);
+	  res.setEncoding('utf8');
+	  res.on('data', (chunk) => {
+		console.log(`BODY: ${chunk}`);
+	  });
+	  res.on('end', () => {
+		console.log('No more data in response.');
+	  });
+	});
+
+	req.on('error', (e) => {
+	  console.error(`problem with request: ${e.message}`);
+	});
+
+	req.end();
+}
+
 module.exports = {
 	getBody: getBody,
 	getBodyAsJSON: getBodyAsJSON,
-	matchRegex: matchRegex
+	matchRegex: matchRegex,
+	post: post,
+	put: put,
+	delete: delet
 };

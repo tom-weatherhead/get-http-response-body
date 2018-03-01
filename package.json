@@ -37,5 +37,8 @@
   "author": {
     "name": "Tom Weatherhead",
     "url": "https://github.com/tom-weatherhead"
+  },
+  "dependencies": {
+    "rxjs": "^5.5.6"
   }
 }
